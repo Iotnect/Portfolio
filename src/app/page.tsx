@@ -5,13 +5,17 @@ import { Expertise } from '@/components/sections/Expertise';
 import { NeoVision } from '@/components/sections/NeoVision';
 import { Solutions } from '@/components/sections/Solutions';
 import { Contact } from '@/components/sections/Contact';
+import { ApplicationBackdrop } from '@/components/effects/ApplicationBackdrop';
 
 export default function HomePage() {
   return (
     <main id="main">
       <Hero />
-      <Introduction />
-      <About />
+      <div className="company-overview">
+        <ApplicationBackdrop />
+        <Introduction />
+        <About />
+      </div>
       <Expertise />
       <NeoVision />
       <Solutions />

@@ -85,3 +85,30 @@
 .hero-aurora{background:radial-gradient(ellipse at 30% 35%,#7431bc38,transparent 58%),radial-gradient(ellipse at 72% 42%,#f25bd02e,transparent 55%)}
 .hero-aurora::after{background:linear-gradient(180deg,#0a051430,transparent 25%,transparent 65%,#0a0514)}
 .hero-aurora .aurora-canvas{mix-blend-mode:screen}
+
+/* Decorative, continuously looping application imagery behind the introduction. */
+.hero-introduction{position:relative;isolation:isolate;overflow:hidden}
+.hero-introduction>.container{position:relative;z-index:2}
+.application-backdrop{position:absolute;inset:0;z-index:0;pointer-events:none;user-select:none;opacity:.46}
+.application-backdrop .flex-carousel{position:absolute;inset:0;pointer-events:none;cursor:default}
+.application-backdrop::after{content:'';position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at center,#0a0514ed 0%,#0a0514cf 32%,#0a05143d 85%),linear-gradient(180deg,#0a0514,transparent 22%,transparent 75%,#0a0514)}
+.application-backdrop-fallback{position:absolute;inset:0;display:flex;align-items:center;overflow:hidden;transition:opacity .5s}
+.application-backdrop:has(.flex-carousel[data-ready=true]) .application-backdrop-fallback{opacity:0}
+.application-backdrop-track{display:flex;gap:28px;width:max-content;animation:application-flow 48s linear infinite}
+.application-backdrop-track img{width:360px;height:270px;object-fit:cover;border-radius:16px;flex-shrink:0;border:1px solid #5d3f76}
+@keyframes application-flow{to{transform:translateX(calc(-50% - 14px))}}
+@media(max-width:760px){.application-backdrop-track img{width:260px;height:195px}.application-backdrop{opacity:.36}}
+@media(prefers-reduced-motion:reduce){.application-backdrop-track{animation:none}}
+
+/* Lower the decorative ribbon and carry its diagonal across the bottom edge. */
+.application-backdrop-flow{position:absolute;inset:-14% -12%;transform:translateY(16%) rotate(-7deg);transform-origin:center;pointer-events:none}
+.application-backdrop::after{background:radial-gradient(ellipse at 50% 35%,#0a0514ed 0%,#0a0514cf 32%,#0a05143d 85%),linear-gradient(180deg,#0a0514,transparent 30%,transparent 80%,#0a0514a6)}
+@media(max-width:760px){.application-backdrop-flow{transform:translateY(18%) rotate(-4deg)}}
+
+/* One uninterrupted image flow behind both Introduction and About. */
+.company-overview{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 50% 0,#20102e,var(--background) 70%)}
+.company-overview>.hero-introduction,.company-overview>.about{position:relative;z-index:1;background:transparent;isolation:auto;overflow:visible}
+.company-overview .application-backdrop-flow{inset:-24% -12%;transform:translateY(2%) rotate(-7deg)}
+.company-overview .application-backdrop::after{background:linear-gradient(180deg,#0a0514b3,transparent 20%,transparent 80%,#0a0514),radial-gradient(ellipse at 50% 30%,#0a0514d9,transparent 75%)}
+.company-overview .application-backdrop-track img{width:260px;height:195px}
+@media(max-width:760px){.company-overview .application-backdrop-flow{transform:translateY(2%) rotate(-4deg)}.company-overview .application-backdrop-track img{width:190px;height:143px}}

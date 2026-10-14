@@ -40,7 +40,7 @@ This project uses `output: 'export'`, so `next start` is not used. Files are gen
 - `src/components/CapabilityCard.tsx` and `SolutionCard.tsx`: reusable typed cards.
 - `src/lib/content.ts`: typed navigation, capabilities and solution data.
 - `public/assets/`: original profile imagery.
-- `public/NeoVision_Iotnect.pdf`: linked company profile (approximately 36 MB).
+The original company profile is retained locally in the project root as source material; it is not served or linked from the portfolio.
 
 The interactive header and hero effects are client components; portfolio sections render at build time. Contact buttons open email and WhatsApp directly. Google Fonts are optional with system font fallbacks. Product screenshots are examples from the supplied PDF, not live feeds.
 

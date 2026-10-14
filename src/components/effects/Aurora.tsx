@@ -58,7 +58,8 @@ export default function Aurora({
     let clock = 0, reveal = 0;
     let raf = 0, last = 0, visible = true;
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const pointer = { x: 0.5, inside: false };
+    const pointer = { x: 0.5, targetX: 0.5, strength: 0, inside: false };
+    const pointerSurface = container.closest('.hero--centered') ?? container;
     let cachedStops = '';
     let palette: RGB[] = [];
 
@@ -85,8 +86,7 @@ export default function Aurora({
           const wave = Math.sin(fieldX * 2.4 + t * 0.35 + layer * 2.1) * 0.48
             + Math.sin(fieldX * 5.2 - t * 0.23 + layer * 1.8) * 0.28
             + Math.sin(fieldX * 8.3 + t * 0.16 + layer * 4.5) * 0.12;
-          const reach = s.mouseInteraction && pointer.inside && !motion.matches
-            ? Math.exp(-((u - pointer.x) ** 2) / 0.035) * 0.06 : 0;
+          const reach = Math.exp(-((u - pointer.x) ** 2) / 0.035) * 0.06 * pointer.strength;
           const hem = viewHeight * (clamp(s.height, 0, 1) + layer * 0.075 + wave * 0.12 * Math.max(0, s.amplitude) + reach);
           const centre = s.direction === 'bottom' ? viewHeight - hem : hem;
           const spread = viewHeight * (0.14 + clamp(s.blend, 0, 1) * 0.12 + s.glow * 0.025);
@@ -119,6 +119,12 @@ export default function Aurora({
       const dt = last ? Math.min((now - last) / 1000, 0.1) : 1 / 30;
       last = now;
       const s = settingsRef.current;
+      // Ease position and influence independently. Boundary events only change
+      // targets, so leaving/re-entering never switches the ribbon displacement.
+      const engaged = s.mouseInteraction && pointer.inside && !motion.matches;
+      pointer.x += (pointer.targetX - pointer.x) * (1 - Math.exp(-dt / 0.7));
+      pointer.strength += ((engaged ? 1 : 0) - pointer.strength)
+        * (1 - Math.exp(-dt / (engaged ? 0.8 : 1.2)));
       if (!motion.matches && !s.paused) clock += dt * s.speed;
       reveal += dt;
       draw();
@@ -135,11 +141,19 @@ export default function Aurora({
     };
     const move = (event: PointerEvent) => {
       const rect = container.getBoundingClientRect();
-      pointer.x = (event.clientX - rect.left) / rect.width;
-      pointer.inside = pointer.x >= 0 && pointer.x <= 1 && event.clientY >= rect.top && event.clientY <= rect.bottom;
+      const x = (event.clientX - rect.left) / Math.max(1, rect.width);
+      pointer.inside = x >= 0 && x <= 1 && event.clientY >= rect.top && event.clientY <= rect.bottom;
+      if (pointer.inside) pointer.targetX = clamp(x, 0, 1);
     };
-    const visibility = () => { if (document.hidden) stop(); else start(); };
-    const changeMotion = () => { stop(); draw(); start(); };
+    const leave = () => { pointer.inside = false; };
+    const out = (event: PointerEvent) => { if (!event.relatedTarget) leave(); };
+    const release = (event: PointerEvent) => { if (event.pointerType !== 'mouse') leave(); };
+    const visibility = () => { if (document.hidden) { leave(); stop(); } else start(); };
+    const changeMotion = () => {
+      stop();
+      if (motion.matches) pointer.strength = 0;
+      draw(); start();
+    };
     const intersection = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
       if (visible) start(); else stop();
@@ -147,12 +161,22 @@ export default function Aurora({
     const observer = new ResizeObserver(resize);
     observer.observe(container); intersection.observe(container);
     window.addEventListener('pointermove', move, { passive: true });
+    pointerSurface.addEventListener('pointerleave', leave);
+    window.addEventListener('pointerout', out);
+    window.addEventListener('pointerup', release);
+    window.addEventListener('pointercancel', leave);
+    window.addEventListener('blur', leave);
     document.addEventListener('visibilitychange', visibility);
     motion.addEventListener('change', changeMotion);
     resize();
     return () => {
       stop(); observer.disconnect(); intersection.disconnect();
       window.removeEventListener('pointermove', move);
+      pointerSurface.removeEventListener('pointerleave', leave);
+      window.removeEventListener('pointerout', out);
+      window.removeEventListener('pointerup', release);
+      window.removeEventListener('pointercancel', leave);
+      window.removeEventListener('blur', leave);
       document.removeEventListener('visibilitychange', visibility);
       motion.removeEventListener('change', changeMotion);
     };

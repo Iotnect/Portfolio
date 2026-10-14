@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   icons: { icon: '/assets/iotnect-logo.jpeg' },
 };
 
-export const viewport: Viewport = { themeColor: '#6023a8' };
+export const viewport: Viewport = { themeColor: '#0a0514' };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (

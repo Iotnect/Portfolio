@@ -1,24 +1,54 @@
+import { CrystalizedLogo } from '@/components/effects/CrystalizedLogo';
+import ParticleText from '@/components/effects/ParticleText';
+import { heroGather } from '@/components/effects/heroAnimation';
+import Aurora from '@/components/effects/Aurora';
+
 export function Hero() {
   return (
-    <section className="hero">
-      <div className="container hero-grid">
-        <div className="hero-copy">
-          <p className="eyebrow"><span className="dot"></span> YOUR TECHNOLOGY PARTNER</p>
-          <h1>Intelligent vision.<br /><span>Real-world impact.</span></h1>
-          <p className="hero-description">See beyond the ordinary. We connect AI, data and technology to help you understand what matters — and act on it.</p>
-          <div className="actions"><a className="button" href="#neo-vision">Discover Neo Vision <span aria-hidden="true">↗</span></a><a className="text-link" href="#expertise">Explore our expertise <span aria-hidden="true">→</span></a></div>
-          <div className="hero-note"><span className="small-line"></span> Built for businesses. Connected to possibilities.</div>
-        </div>
-        <div className="hero-visual">
-          <img className="tech-image" src="/assets/technology.webp" alt="Code and data visualisation representing connected technology" width={1400} height={1120} fetchPriority="high" />
-          <div className="visual-shade"></div>
-          <div className="visual-top"><span className="visual-label">NEO VISION™</span><span className="visual-badge">AI-POWERED</span></div>
-          <div className="vision-frame"><span></span><span></span><span></span><span></span><div className="vision-mark">NV<span>VISION BEYOND LIMITS</span></div></div>
-          <div className="visual-bottom"><span className="dot"></span><span>Your Eagle Eye Partner</span><span aria-hidden="true">↗</span></div>
-          <div className="floating-card"><span className="floating-icon" aria-hidden="true">◎</span><div><strong>Existing cameras.<br />New intelligence.</strong><span>Unlock the potential of your CCTV.</span></div></div>
-        </div>
+    <section className="hero hero--centered" aria-labelledby="hero-title">
+      <div className="hero-aurora" aria-hidden="true">
+        <Aurora
+          colorStops={['#7431BC', '#F25BD0', '#8B45DB']}
+          amplitude={1.5}
+          blend={0.45}
+          speed={0.8}
+          height={0.42}
+          glow={0.8}
+          brightness={1.15}
+          layers={2}
+          opacity={0.8}
+          dpr={1}
+          mouseInteraction
+        />
       </div>
-      <div className="container hero-foot"><span>AI COMPUTER VISION</span><span className="divider">/</span><span>INTERNET OF THINGS</span><span className="divider">/</span><span>INTELLIGENT DASHBOARDS</span><a href="#about" aria-label="Scroll to about us">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></a></div>
+      <div className="container hero-brand">
+        <h1 id="hero-title" className="sr-only">Iotnect</h1>
+        <div className="hero-brand-frame">
+          <CrystalizedLogo src="/assets/iotnect-logo.jpeg" color="#F25BD0" size={0.77} crackle={0.85} fill={0.5} interactive hoverStrength={0.7} />
+        </div>
+        <div className="hero-wordmark" aria-hidden="true">
+          <ParticleText
+            text="Iotnect"
+            fontSize="clamp(3.5rem, 9vw, 6rem)"
+            fontWeight={800}
+            fontFamily="Manrope, sans-serif"
+            color="#F7E8FF"
+            highlightColor="#F25BD0"
+            particleSize={2}
+            density={3}
+            scatter={heroGather.scatter}
+            gatherDuration={heroGather.duration}
+            stagger={heroGather.stagger}
+            pointerRepel={28}
+            repelRadius={90}
+            idleDrift={0.5}
+            trigger="mount"
+            glow
+          />
+        </div>
+        <p className="hero-brand-tagline">INTELLIGENCE. CONNECTED.</p>
+        <a className="hero-scroll" href="#introduction">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></a>
+      </div>
     </section>
   );
 }

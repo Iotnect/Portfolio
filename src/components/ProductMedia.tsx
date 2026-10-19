@@ -13,7 +13,20 @@ type ProductMediaProps = {
 
 export function ProductMedia({ title, poster, posterAlt, video, caption, description, frame, autoPlay = false }: ProductMediaProps) {
   const media = video?.kind === 'file' ? (
-    <video controls autoPlay={autoPlay} muted={autoPlay} loop={autoPlay} playsInline preload="metadata" poster={video.poster ?? poster} aria-label={`${title} product demonstration`}>
+    <video
+      className={autoPlay ? 'product-video-ambient' : undefined}
+      controls={!autoPlay}
+      autoPlay={autoPlay}
+      muted={autoPlay}
+      loop={autoPlay}
+      playsInline
+      disablePictureInPicture={autoPlay}
+      disableRemotePlayback={autoPlay}
+      tabIndex={autoPlay ? -1 : undefined}
+      preload="metadata"
+      poster={video.poster ?? poster}
+      aria-label={`${title} product demonstration`}
+    >
       <source src={video.src} type={video.src.endsWith('.mp4') ? 'video/mp4' : undefined} />
       {video.captions && <track kind="captions" src={video.captions} srcLang="en" label="English" default />}
       Your browser does not support video playback.

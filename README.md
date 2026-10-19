@@ -61,3 +61,9 @@ The Laravel source, environment, dependencies and tests are preserved under igno
 Next.js references: [installation](https://nextjs.org/docs/app/getting-started/installation), [static export](https://nextjs.org/docs/app/guides/static-exports).
 
 The opening hero centres the plasma logo above a particle-animated Iotnect wordmark. The supplied ParticleText implementation is in `src/components/effects/ParticleText.tsx` with its companion CSS. Its colour, density and gathering settings are configured in `Hero.tsx`; the former hero copy and buttons are now in `Introduction.tsx`, below the opening screen. Particle animation pauses out of view and respects reduced motion; touch scrolling remains enabled.
+
+## Product videos
+
+Neo Vision is section 03, Neo Eagle is section 04, and real-world applications are section 05. Both product sections use `src/components/ProductMedia.tsx`. Neo Vision plays `public/videos/neovision-demo.mp4` inside its existing laptop frame with muted autoplay, inline playback and looping. Playback controls remain available, and `public/videos/neovision-demo-poster.jpg` provides its preview. Neo Eagle retains its existing screenshot until configured.
+
+To replace or add videos, place MP4/WebM files in `public/videos/` and configure `src/lib/productVideos.ts` with entries such as `neoEagle: { kind: 'file', src: '/videos/neo-eagle.mp4', poster: '/videos/neo-eagle-poster.jpg' }`. For hosted videos, use `{ kind: 'embed', src: 'provider embed URL' }`. Local videos use playback controls, inline playback and metadata-only preloading. `ProductMedia` supports optional `frame="laptop"` and `autoPlay` props; enabling autoplay also enables muting and looping. Rebuild after configuration changes.

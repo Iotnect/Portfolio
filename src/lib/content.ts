@@ -2,6 +2,7 @@ export const navigation = [
   { href: '#about', label: 'About us' },
   { href: '#expertise', label: 'Expertise' },
   { href: '#neo-vision', label: 'Neo Vision' },
+  { href: '#neo-eagle', label: 'Neo Eagle' },
   { href: '#solutions', label: 'Solutions' },
 ] as const;
 

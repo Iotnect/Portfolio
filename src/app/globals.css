@@ -112,3 +112,23 @@
 .company-overview .application-backdrop::after{background:linear-gradient(180deg,#0a0514b3,transparent 20%,transparent 80%,#0a0514),radial-gradient(ellipse at 50% 30%,#0a0514d9,transparent 75%)}
 .company-overview .application-backdrop-track img{width:260px;height:195px}
 @media(max-width:760px){.company-overview .application-backdrop-flow{transform:translateY(2%) rotate(-4deg)}.company-overview .application-backdrop-track img{width:190px;height:143px}}
+
+/* Product demonstrations share one responsive video presentation. */
+.product-media{aspect-ratio:16/10;width:100%;overflow:hidden;border-radius:6px;background:#0a0514}
+.product-media>video,.product-media>iframe,.product-media>img{display:block;width:100%;height:100%;border:0;border-radius:6px;object-fit:contain}
+.product-media--laptop{aspect-ratio:1440/923}
+.product-laptop{position:relative;width:100%;height:100%}
+.product-laptop-frame{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.product-laptop-screen{position:absolute;left:7.2222%;top:.8667%;width:85.4167%;height:85.6988%;overflow:hidden;border-radius:2.4% / 3.7%;background:#0b0c12}
+.product-laptop-screen>video,.product-laptop-screen>iframe{display:block;width:100%;height:100%;border:0;object-fit:contain;background:#0b0c12}
+.product-eagle{background:var(--pale);border-top:1px solid var(--line)}
+@media(min-width:761px) and (max-width:1000px){.navigation nav{gap:12px;font-size:12px}.navigation .button-small{gap:12px;padding-inline:13px}}
+
+.product-eagle .product-grid{grid-template-columns:1.1fr 1fr}
+@media(max-width:760px){.product-eagle .product-grid{grid-template-columns:1fr}}
+
+/* Gradient Waves decorates Neo Vision without capturing page interactions. */
+.product-vision{position:relative;isolation:isolate;overflow:hidden}
+.product-vision>.product-grid{position:relative;z-index:1}
+.neo-vision-background{position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 70% 80%,#7431bc30,transparent 65%)}
+.neo-vision-background::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#0a0514cc,transparent 18%,transparent 82%,#0a0514cc),linear-gradient(90deg,#0a051459,#0a05140d)}

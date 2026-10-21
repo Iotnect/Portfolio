@@ -133,3 +133,8 @@
 .product-vision>.product-grid{position:relative;z-index:1}
 .neo-vision-background{position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 70% 80%,#7431bc30,transparent 65%)}
 .neo-vision-background::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#0a0514cc,transparent 18%,transparent 82%,#0a0514cc),linear-gradient(90deg,#0a051459,#0a05140d)}
+
+.product-video-shell{position:relative;width:100%;height:100%;background:#0b0c12}
+.product-video-shell>video{display:block;width:100%;height:100%;object-fit:contain}
+.product-video-resume{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:10px;align-items:center;white-space:nowrap;border:1px solid #c49bff80;border-radius:6px;background:#241034ed;color:#fff;padding:12px 18px;font:600 13px 'DM Sans',sans-serif;cursor:pointer}
+.product-video-resume:hover{background:#7431bc}

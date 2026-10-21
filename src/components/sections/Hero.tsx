@@ -17,7 +17,6 @@ export function Hero() {
           brightness={1.15}
           layers={2}
           opacity={0.8}
-          dpr={1}
           mouseInteraction
         />
       </div>

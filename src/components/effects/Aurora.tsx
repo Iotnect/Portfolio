@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type CSSProperties } from 'react';
 import './Aurora.css';
+import { getAuroraLayout } from './auroraLayout';
 
 export interface AuroraProps {
   colorStops?: string[];
@@ -41,7 +42,7 @@ export default function Aurora({
   amplitude = 1, blend = 0.5, speed = 1, time,
   height = 0.45, scale = 1, glow = 0.6, brightness = 1,
   layers = 2, direction = 'top', mouseInteraction = true, intro = true,
-  opacity = 1, lightMode = false, paused = false, dpr = 1,
+  opacity = 1, lightMode = false, paused = false, dpr,
   className = '', style,
 }: AuroraProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -55,6 +56,7 @@ export default function Aurora({
     const ctx = canvas?.getContext('2d');
     if (!container || !canvas || !ctx) return;
     let width = 1, viewHeight = 1;
+    let renderScale = 1;
     let clock = 0, reveal = 0;
     let raf = 0, last = 0, visible = true;
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -75,27 +77,31 @@ export default function Aurora({
       const t = s.time ?? clock;
       const fade = !s.intro || motion.matches ? 1 : 1 - (1 - Math.min(1, reveal / 2.4)) ** 3;
       ctx.globalAlpha = clamp(s.opacity, 0, 1) * Math.min(1.5, Math.max(0, s.brightness)) * fade * (s.lightMode ? 0.7 : 1);
-      const columns = Math.ceil(width / 5);
+      const { fieldHeight, columnStep } = getAuroraLayout(width, viewHeight, window.devicePixelRatio || 1, s.dpr);
+      const columns = Math.ceil(width / columnStep);
       const columnWidth = width / columns;
       const layerCount = Math.round(clamp(s.layers, 1, 3));
       for (let layer = 0; layer < layerCount; layer++) {
         for (let column = 0; column < columns; column++) {
-          const x = column * columnWidth;
+          const x = Math.round(column * columnWidth * renderScale) / renderScale;
+          const nextX = Math.round((column + 1) * columnWidth * renderScale) / renderScale;
           const u = x / width;
-          const fieldX = (x - width / 2) / viewHeight * Math.max(0.1, s.scale);
+          const fieldX = (x - width / 2) / fieldHeight * Math.max(0.1, s.scale);
           const wave = Math.sin(fieldX * 2.4 + t * 0.35 + layer * 2.1) * 0.48
             + Math.sin(fieldX * 5.2 - t * 0.23 + layer * 1.8) * 0.28
             + Math.sin(fieldX * 8.3 + t * 0.16 + layer * 4.5) * 0.12;
           const reach = Math.exp(-((u - pointer.x) ** 2) / 0.035) * 0.06 * pointer.strength;
-          const hem = viewHeight * (clamp(s.height, 0, 1) + layer * 0.075 + wave * 0.12 * Math.max(0, s.amplitude) + reach);
+          const hem = viewHeight * clamp(s.height, 0, 1)
+            + fieldHeight * (layer * 0.075 + wave * 0.12 * Math.max(0, s.amplitude) + reach);
           const centre = s.direction === 'bottom' ? viewHeight - hem : hem;
-          const spread = viewHeight * (0.14 + clamp(s.blend, 0, 1) * 0.12 + s.glow * 0.025);
+          const spread = fieldHeight * (0.14 + clamp(s.blend, 0, 1) * 0.12 + s.glow * 0.025);
           const position = clamp(u + layer * 0.09 + Math.sin(t * 0.12) * 0.05, 0, 1) * (palette.length - 1);
           const index = Math.min(Math.floor(position), palette.length - 1);
           const a = palette[index], b = palette[Math.min(index + 1, palette.length - 1)];
           const mix = position - index;
           const rgb = a.map((v, i) => Math.round(v + (b[i] - v) * mix)).join(',');
-          const thread = 0.7 + Math.sin(x * 0.035 + t * 0.4 + layer) * 0.18;
+          const threadX = width <= 760 ? x * 1.6 : x;
+          const thread = 0.7 + Math.sin(threadX * 0.035 + t * 0.4 + layer) * 0.18;
           const strength = thread * (layer === 0 ? 1 : 0.55);
           const gradient = ctx.createLinearGradient(0, centre - spread * 1.6, 0, centre + spread);
           gradient.addColorStop(0, `rgba(${rgb},0)`);
@@ -105,7 +111,9 @@ export default function Aurora({
           gradient.addColorStop(0.86, `rgba(${rgb},${strength * 0.38})`);
           gradient.addColorStop(1, `rgba(${rgb},0)`);
           ctx.fillStyle = gradient;
-          ctx.fillRect(x, centre - spread * 1.6, columnWidth + 0.5, spread * 2.6);
+          // Preserve the desktop curtain's fine illuminated threads. At the
+          // higher phone pixel density these stay thin instead of smearing.
+          ctx.fillRect(x, centre - spread * 1.6, nextX - x + 0.5, spread * 2.6);
         }
       }
       ctx.globalAlpha = 1;
@@ -134,7 +142,8 @@ export default function Aurora({
     const resize = () => {
       width = Math.max(1, container.clientWidth);
       viewHeight = Math.max(1, container.clientHeight);
-      const ratio = Math.min(settingsRef.current.dpr || 1, 1.5);
+      const { ratio } = getAuroraLayout(width, viewHeight, window.devicePixelRatio || 1, settingsRef.current.dpr);
+      renderScale = ratio;
       canvas.width = Math.round(width * ratio); canvas.height = Math.round(viewHeight * ratio);
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       draw(); start();
@@ -161,6 +170,7 @@ export default function Aurora({
     const observer = new ResizeObserver(resize);
     observer.observe(container); intersection.observe(container);
     window.addEventListener('pointermove', move, { passive: true });
+    window.addEventListener('resize', resize, { passive: true });
     pointerSurface.addEventListener('pointerleave', leave);
     window.addEventListener('pointerout', out);
     window.addEventListener('pointerup', release);
@@ -172,6 +182,7 @@ export default function Aurora({
     return () => {
       stop(); observer.disconnect(); intersection.disconnect();
       window.removeEventListener('pointermove', move);
+      window.removeEventListener('resize', resize);
       pointerSurface.removeEventListener('pointerleave', leave);
       window.removeEventListener('pointerout', out);
       window.removeEventListener('pointerup', release);
